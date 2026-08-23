@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.automation</groupId>
+    <artifactId>playwright-java-automation</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+
+    <name>Playwright Java Automation Framework</name>
+    <description>
+        Production-style Playwright automation testing framework
+        with Java 21, TestNG, Allure, and Page Object Model.
+    </description>
+
+    <!-- ================================================================== -->
+    <!-- PROPERTIES — single place to manage all versions                   -->
+    <!-- ================================================================== -->
+    <properties>
+        <!-- Java -->
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- Core dependencies -->
+        <playwright.version>1.52.0</playwright.version>
+        <testng.version>7.10.2</testng.version>
+
+        <!-- Allure reporting -->
+        <allure.version>2.29.1</allure.version>
+        <allure.maven.version>2.15.2</allure.maven.version>
+        <aspectj.version>1.9.22.1</aspectj.version>
+
+        <!-- Data & logging -->
+        <jackson.version>2.18.3</jackson.version>
+        <slf4j.version>2.0.16</slf4j.version>
+        <logback.version>1.5.16</logback.version>
+
+        <!-- Plugins -->
+        <surefire.version>3.5.2</surefire.version>
+        <compiler.plugin.version>3.13.0</compiler.plugin.version>
+    </properties>
+
+    <!-- ================================================================== -->
+    <!-- DEPENDENCY MANAGEMENT — controls Allure BOM versions               -->
+    <!-- ================================================================== -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-bom</artifactId>
+                <version>${allure.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <!-- ================================================================== -->
+    <!-- DEPENDENCIES                                                       -->
+    <!-- ================================================================== -->
+    <dependencies>
+
+        <!-- Playwright — browser automation -->
+        <dependency>
+            <groupId>com.microsoft.playwright</groupId>
+            <artifactId>playwright</artifactId>
+            <version>${playwright.version}</version>
+        </dependency>
+
+        <!-- TestNG — test framework -->
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>${testng.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Allure TestNG adapter — reporting integration -->
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-testng</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Jackson — JSON test data deserialization -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+
+        <!-- SLF4J API — logging facade -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+
+        <!-- Logback — logging implementation -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
+        </dependency>
+
+    </dependencies>
+
+    <!-- ================================================================== -->
+    <!-- BUILD PLUGINS                                                      -->
+    <!-- ================================================================== -->
+    <build>
+        <plugins>
+
+            <!-- Java compiler plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${compiler.plugin.version}</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+
+            <!-- Surefire — runs TestNG tests -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${surefire.version}</version>
+                <configuration>
+                    <!-- TestNG suite file -->
+                    <suiteXmlFiles>
+                        <suiteXmlFile>testng.xml</suiteXmlFile>
+                    </suiteXmlFiles>
+
+                    <!-- AspectJ weaver for Allure @Step / @Attachment -->
+                    <argLine>
+                        -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
+                    </argLine>
+
+                    <!--
+                        Pass system properties from command line to tests.
+                        Usage:
+                          mvn test -Dbrowser=firefox
+                          mvn test -Dheadless=false
+                          mvn test -Denv=staging
+                    -->
+                    <systemPropertyVariables>
+                        <browser>${browser}</browser>
+                        <headless>${headless}</headless>
+                        <env>${env}</env>
+                    </systemPropertyVariables>
+
+                    <!-- Allow -Dgroups=smoke to override testng.xml groups -->
+                    <groups>${groups}</groups>
+
+                    <!-- Allure results directory -->
+                    <properties>
+                        <property>
+                            <name>allure.results.directory</name>
+                            <value>${project.build.directory}/allure-results</value>
+                        </property>
+                    </properties>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.aspectj</groupId>
+                        <artifactId>aspectjweaver</artifactId>
+                        <version>${aspectj.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <!-- Allure Maven plugin — report generation -->
+            <plugin>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-maven</artifactId>
+                <version>${allure.maven.version}</version>
+                <configuration>
+                    <reportVersion>${allure.version}</reportVersion>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>

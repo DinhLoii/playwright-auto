@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "User Schema",
+  "description": "JSON schema for validating user/employee API responses",
+  "type": "object",
+  "required": ["firstName", "lastName", "employeeId"],
+  "properties": {
+    "firstName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 30
+    },
+    "lastName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 30
+    },
+    "employeeId": {
+      "type": "string"
+    },
+    "middleName": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["Enabled", "Disabled"]
+    }
+  }
+}

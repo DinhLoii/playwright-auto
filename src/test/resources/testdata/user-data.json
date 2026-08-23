@@ -1,0 +1,29 @@
+[
+  {
+    "firstName": "John",
+    "lastName": "Doe",
+    "employeeId": "0100",
+    "username": "johndoe",
+    "password": "Password@123",
+    "role": "ESS",
+    "status": "Enabled"
+  },
+  {
+    "firstName": "Jane",
+    "lastName": "Smith",
+    "employeeId": "0200",
+    "username": "janesmith",
+    "password": "Password@456",
+    "role": "Admin",
+    "status": "Enabled"
+  },
+  {
+    "firstName": "",
+    "lastName": "",
+    "employeeId": "",
+    "username": "",
+    "password": "",
+    "role": "",
+    "status": ""
+  }
+]

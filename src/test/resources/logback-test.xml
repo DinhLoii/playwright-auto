@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Logback configuration for test execution.
+
+    WHY: Structured logging helps debug test failures.
+    - Console appender for immediate feedback during development.
+    - File appender for CI/CD — logs persist after the run.
+
+    IMPORTANT: Never log passwords, tokens, or session cookies.
+-->
+<configuration>
+
+    <!-- Console output -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- File output — persisted for CI/CD review -->
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>target/logs/test-execution.log</file>
+        <append>false</append>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Framework classes — DEBUG level for detailed diagnostics -->
+    <logger name="com.automation" level="DEBUG"/>
+
+    <!-- Playwright internals — only warnings -->
+    <logger name="com.microsoft.playwright" level="WARN"/>
+
+    <!-- Root logger — INFO level, both console and file -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
+</configuration>

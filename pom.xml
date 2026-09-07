@@ -176,6 +176,13 @@
                 </dependencies>
             </plugin>
 
+            <!-- Exec Maven plugin — for running Java classes (e.g., Playwright CLI) -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.5.0</version>
+            </plugin>
+
             <!-- Allure Maven plugin — report generation -->
             <plugin>
                 <groupId>io.qameta.allure</groupId>

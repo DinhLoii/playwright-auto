@@ -123,18 +123,28 @@ public class ConfigManager {
     }
 
     /**
-     * Reads a credential from environment variables.
-     * WHY: Credentials must never be in property files committed to Git.
-     * The .env.example file shows which variables to set.
+     * Reads a credential with priority:
+     * 1. Environment variable (for production/CI)
+     * 2. Properties file (for dev environments)
+     * 3. Fallback default
+     *
+     * WHY: Credentials for public demo sites can be in properties.
+     * Production credentials must use environment variables.
      */
     public String getUsername() {
         String envVar = System.getenv("APP_USERNAME");
-        return (envVar != null && !envVar.isBlank()) ? envVar : "Admin";
+        if (envVar != null && !envVar.isBlank()) {
+            return envVar;
+        }
+        return getProperty("app.username", "Admin");
     }
 
     public String getPassword() {
         String envVar = System.getenv("APP_PASSWORD");
-        return (envVar != null && !envVar.isBlank()) ? envVar : "admin123";
+        if (envVar != null && !envVar.isBlank()) {
+            return envVar;
+        }
+        return getProperty("app.password", "admin123");
     }
 
     /**
